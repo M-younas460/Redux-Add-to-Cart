@@ -13,7 +13,7 @@ const Nav = () => {
   };
 
   return (
-    <div>
+    <>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -27,7 +27,7 @@ const Nav = () => {
           </IconButton>
         </Toolbar>
       </AppBar>
-    </div>
+    </>
   );
 };
 

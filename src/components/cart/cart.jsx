@@ -5,15 +5,26 @@ import {
   decrementItem,
   removeItemFromCart,
 } from "../../cartSlice";
-import { Box, Typography, IconButton } from "@mui/material";
+import { Box, Typography, IconButton, Button } from "@mui/material";
 import { Add, Remove, Delete } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
+  const navigate = useNavigate();
   const cartItems = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
 
+  // Helper function to format numbers as currency (Rs)
+  const formatCurrency = (amount) => {
+    return `Rs ${amount.toLocaleString()}`;
+  };
+
+  // Calculate the grand total by summing up the total price of each item
   const grandTotal = cartItems.reduce((total, item) => {
-    const itemPrice = parseInt(item.price.replace(/Rs\s?|,/g, ""));
+    const itemPrice =
+      typeof item.price === "string"
+        ? parseInt(item.price.replace(/Rs\s?|,/g, ""))
+        : item.price;
     return total + itemPrice * item.quantity;
   }, 0);
 
@@ -21,10 +32,17 @@ const Cart = () => {
     return <Typography variant="h6">Your cart is empty</Typography>;
   }
 
+  const handleCartClick = () => {
+    navigate("/checkout");
+  };
+
   return (
     <Box sx={{ padding: 2 }}>
       {cartItems.map((item) => {
-        const itemPrice = parseInt(item.price.replace(/Rs\s?|,/g, ""));
+        const itemPrice =
+          typeof item.price === "string"
+            ? parseInt(item.price.replace(/Rs\s?|,/g, ""))
+            : item.price; // If price is already a number, just use it
         const totalPrice = itemPrice * item.quantity;
 
         return (
@@ -38,10 +56,11 @@ const Cart = () => {
               paddingBottom: 2,
             }}
           >
+            {/* Product Image */}
             <Box sx={{ width: "80px", marginRight: 2 }}>
               <img
                 src={item.image}
-                alt={item.name}
+                alt={item.title}
                 style={{
                   width: "100%",
                   height: "auto",
@@ -50,24 +69,26 @@ const Cart = () => {
               />
             </Box>
 
+            {/* Product Title and Price */}
             <Box sx={{ flexGrow: 1 }}>
               <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                {item.name}
+                {item.title}
               </Typography>
               <Box display={"flex"}>
                 <Typography
                   variant="body1"
                   sx={{ color: "gray", display: "flex" }}
                 >
-                  Price: Rs {itemPrice.toLocaleString()}
+                  {formatCurrency(itemPrice)}
                   <Typography sx={{ mx: 2 }}> X {item.quantity}</Typography>
                 </Typography>
               </Box>
               <Typography variant="body1" sx={{ color: "gray" }}>
-                Total: Rs {totalPrice.toLocaleString()}
+                Total: {formatCurrency(totalPrice)}
               </Typography>
             </Box>
 
+            {/* Quantity Increment/Decrement */}
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <IconButton onClick={() => dispatch(decrementItem(item.id))}>
                 <Remove />
@@ -78,6 +99,7 @@ const Cart = () => {
               </IconButton>
             </Box>
 
+            {/* Remove Item from Cart */}
             <IconButton
               sx={{ marginLeft: 2 }}
               onClick={() => dispatch(removeItemFromCart(item.id))}
@@ -88,10 +110,14 @@ const Cart = () => {
         );
       })}
 
-      <Box sx={{ mt: 4 }}>
+      {/* Grand Total */}
+      <Box sx={{ mt: 4, display: "flex", justifyContent: "space-between" }}>
         <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-          Grand Total: Rs {grandTotal.toLocaleString()}
+          Grand Total: {formatCurrency(grandTotal)}
         </Typography>
+        <Button variant="contained" onClick={handleCartClick}>
+          Checkout
+        </Button>
       </Box>
     </Box>
   );

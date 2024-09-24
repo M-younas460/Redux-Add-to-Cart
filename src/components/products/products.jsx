@@ -1,32 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { addItemToCart } from "../../cartSlice";
+import axios from "axios"; // or use fetch if you prefer
+
 const Products = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sample product data
-  const products = [
-    {
-      id: 1,
-      name: "iPhone 16",
-      price: "Rs 201,400",
-      image: "/assets/i phone.jpg",
-    },
-    {
-      id: 2,
-      name: "Samsung Galaxy S21",
-      price: "Rs 150,000",
-      image: "/assets/sumsung.jpg",
-    },
-    {
-      id: 3,
-      name: "Google Pixel 7",
-      price: "Rs 120,500",
-      image: "/assets/google pixel.jpg",
-    },
-  ];
+  // Fetch products from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("https://fakestoreapi.com/products");
+        setProducts(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to fetch products");
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
   const handleAddToCart = (product) => {
     dispatch(addItemToCart(product));
   };
@@ -35,20 +34,23 @@ const Products = () => {
     return cartItems.some((item) => item.id === productId);
   };
 
+  if (loading) return <Typography>Loading products...</Typography>;
+  if (error) return <Typography>{error}</Typography>;
+
   return (
     <Container>
       <Box
         sx={{
           display: "flex",
-          flexDirection: "row", // Arrange items in a row
-          justifyContent: "space-between", // Space items evenly
-          flexWrap: "wrap", // Wrap items if screen size is small
+          flexDirection: "row",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
           mt: 2,
         }}
       >
         {products.map((product) => (
           <Box
-            key={product.id}
+            key={product._id}
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -59,26 +61,26 @@ const Products = () => {
               border: "1px solid #ccc",
               borderRadius: "8px",
               maxWidth: "250px",
-              width: "100%", // Ensures responsive width
+              width: "100%",
             }}
           >
             {/* Product Image */}
             <Box
               component="img"
-              src={product.image}
+              src={product.image} // Ensure image URL is correct
               alt={product.name}
               sx={{
-                width: "100%", // Full width inside the container
-                maxWidth: "250px", // Limit the max width
-                height: "auto", // Maintain aspect ratio
+                width: "100%",
+                maxWidth: "250px",
+                height: "auto",
                 borderRadius: "5px",
                 mb: 2,
               }}
             />
 
             {/* Product Name */}
-            <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
-              {product.name}
+            <Typography variant="h5" sx={{ fontWeight: "normal", mb: 1 }}>
+              {product.title}
             </Typography>
 
             {/* Product Price */}
@@ -92,9 +94,9 @@ const Products = () => {
               color="primary"
               sx={{ width: "100%" }}
               onClick={() => handleAddToCart(product)}
-              disabled={isProductInCart(product.id)}
+              disabled={isProductInCart(product._id)}
             >
-              {isProductInCart(product.id) ? "Added to Cart" : "Add to Cart"}
+              {isProductInCart(product._id) ? "Added to Cart" : "Add to Cart"}
             </Button>
           </Box>
         ))}
