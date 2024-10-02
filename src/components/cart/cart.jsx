@@ -14,12 +14,10 @@ const Cart = () => {
   const cartItems = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
 
-  // Helper function to format numbers as currency (Rs)
   const formatCurrency = (amount) => {
     return `Rs ${amount.toLocaleString()}`;
   };
 
-  // Calculate the grand total by summing up the total price of each item
   const grandTotal = cartItems.reduce((total, item) => {
     const itemPrice =
       typeof item.price === "string"
@@ -29,7 +27,13 @@ const Cart = () => {
   }, 0);
 
   if (cartItems.length === 0) {
-    return <Typography variant="h6">Your cart is empty</Typography>;
+    return (
+      <img
+        src="assets/empty.svg"
+        alt=""
+        style={{ width: "50%", marginLeft: "327px", marginTop: "35px" }}
+      />
+    );
   }
 
   const handleCartClick = () => {
@@ -42,7 +46,7 @@ const Cart = () => {
         const itemPrice =
           typeof item.price === "string"
             ? parseInt(item.price.replace(/Rs\s?|,/g, ""))
-            : item.price; // If price is already a number, just use it
+            : item.price;
         const totalPrice = itemPrice * item.quantity;
 
         return (
@@ -56,7 +60,6 @@ const Cart = () => {
               paddingBottom: 2,
             }}
           >
-            {/* Product Image */}
             <Box sx={{ width: "80px", marginRight: 2 }}>
               <img
                 src={item.image}
@@ -69,7 +72,6 @@ const Cart = () => {
               />
             </Box>
 
-            {/* Product Title and Price */}
             <Box sx={{ flexGrow: 1 }}>
               <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                 {item.title}
@@ -88,7 +90,6 @@ const Cart = () => {
               </Typography>
             </Box>
 
-            {/* Quantity Increment/Decrement */}
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <IconButton onClick={() => dispatch(decrementItem(item.id))}>
                 <Remove />
@@ -99,7 +100,6 @@ const Cart = () => {
               </IconButton>
             </Box>
 
-            {/* Remove Item from Cart */}
             <IconButton
               sx={{ marginLeft: 2 }}
               onClick={() => dispatch(removeItemFromCart(item.id))}
@@ -110,7 +110,6 @@ const Cart = () => {
         );
       })}
 
-      {/* Grand Total */}
       <Box sx={{ mt: 4, display: "flex", justifyContent: "space-between" }}>
         <Typography variant="h6" sx={{ fontWeight: "bold" }}>
           Grand Total: {formatCurrency(grandTotal)}

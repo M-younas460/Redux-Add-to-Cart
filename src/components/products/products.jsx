@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { addItemToCart } from "../../cartSlice";
-import axios from "axios"; // or use fetch if you prefer
+import axios from "axios";
 
 const Products = () => {
   const dispatch = useDispatch();
@@ -11,7 +11,7 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch products from API
+  
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -34,8 +34,23 @@ const Products = () => {
     return cartItems.some((item) => item.id === productId);
   };
 
-  if (loading) return <Typography>Loading products...</Typography>;
-  if (error) return <Typography>{error}</Typography>;
+  if (loading) {
+    return (
+      <img
+        src="assets/loader.gif"
+        alt=""
+        style={{
+          display: "block",
+          margin: "auto",
+          paddingTop: "200px",
+          width: "50px",
+        }}
+      />
+    );
+  }
+  if (error) {
+    return <Typography color="error">{error}</Typography>;
+  }
 
   return (
     <Container>
@@ -64,10 +79,10 @@ const Products = () => {
               width: "100%",
             }}
           >
-            {/* Product Image */}
+            
             <Box
               component="img"
-              src={product.image} // Ensure image URL is correct
+              src={product.image} 
               alt={product.name}
               sx={{
                 width: "100%",
@@ -78,17 +93,17 @@ const Products = () => {
               }}
             />
 
-            {/* Product Name */}
+           
             <Typography variant="h5" sx={{ fontWeight: "normal", mb: 1 }}>
               {product.title}
             </Typography>
 
-            {/* Product Price */}
+           
             <Typography variant="h6" sx={{ color: "gray", mb: 2 }}>
               {product.price}
             </Typography>
 
-            {/* Add to Cart Button */}
+            
             <Button
               variant="contained"
               color="primary"

@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Box, TextField, Button, Typography, Divider } from "@mui/material";
+import axios from "axios"; 
 
 const formatCurrency = (amount) => {
   return `Rs ${amount.toLocaleString()}`;
@@ -8,6 +9,37 @@ const formatCurrency = (amount) => {
 
 function Checkout() {
   const cartItems = useSelector((state) => state.cart.items);
+  
+  
+  const [customer, setCustomer] = useState({
+    name: "",
+    email: "",
+    address: "",
+  });
+
+  const handleInputChange = (e) => {
+    setCustomer({ ...customer, [e.target.name]: e.target.value });
+  };
+
+  const handleCheckout = async () => {
+    try {
+      const order = {
+        products: cartItems.map((item) => ({
+          productName: item.title,
+          price: item.price,
+          quantity: item.quantity, 
+        })),
+        customer,
+      };
+
+     
+      const response = await axios.post("http://localhost:5000/api/checkout", order);
+      alert(response.data.message);
+    } catch (error) {
+      console.error("Failed to place order", error);
+      alert("Failed to place order");
+    }
+  };
 
   const grandTotal = cartItems.reduce((total, item) => {
     const itemPrice =
@@ -16,6 +48,8 @@ function Checkout() {
         : item.price;
     return total + itemPrice * item.quantity;
   }, 0);
+
+  
 
   return (
     <Box
@@ -88,23 +122,43 @@ function Checkout() {
         component="form"
         sx={{ display: "flex", flexDirection: "column", gap: 2 }}
       >
-        <TextField label="Name" variant="outlined" fullWidth required />
+        <TextField
+          label="Name"
+          name="name"
+          variant="outlined"
+          fullWidth
+          required
+          value={customer.name}
+          onChange={handleInputChange}
+        />
         <TextField
           label="Email"
+          name="email"
           variant="outlined"
           type="email"
           fullWidth
           required
+          value={customer.email}
+          onChange={handleInputChange}
         />
         <TextField
           label="Address"
+          name="address"
           variant="outlined"
           multiline
           rows={3}
           fullWidth
           required
+          value={customer.address}
+          onChange={handleInputChange}
         />
-        <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ mt: 2 }}
+          onClick={handleCheckout}
+        >
           Buy Now
         </Button>
       </Box>
