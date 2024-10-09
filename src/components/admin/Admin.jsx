@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Card, CardContent, Grid } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+  
+} from "@mui/material";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import axios from "axios";
 
 const formatCurrency = (amount) => `Rs ${amount.toLocaleString()}`;
@@ -7,6 +15,7 @@ const formatCurrency = (amount) => `Rs ${amount.toLocaleString()}`;
 function AdminDashboard() {
   const [orders, setOrders] = useState([]);
 
+  // Fetch orders from the server
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -19,6 +28,21 @@ function AdminDashboard() {
 
     fetchOrders();
   }, []);
+
+  // Handle order deletion
+  const handleDeleteOrder = async (orderId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/api/orders/${orderId}`
+      );
+      console.log(response.data.message);
+      // Refresh the orders list after deletion
+      setOrders(orders.filter((order) => order._id !== orderId));
+    } catch (error) {
+      console.error("Error deleting order", error);
+      alert("Failed to delete order");
+    }
+  };
 
   return (
     <Box sx={{ p: 3, backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
@@ -53,7 +77,6 @@ function AdminDashboard() {
                         mb: 2,
                       }}
                     >
-                     
                       <Typography>
                         {product.productName} (x{product.quantity})
                       </Typography>
@@ -71,6 +94,12 @@ function AdminDashboard() {
                     )
                   )}
                 </Typography>
+                <DeleteForeverIcon
+                  onClick={() => handleDeleteOrder(order._id)}
+                  sx={{ mt: 2, color: "red" }}
+                >
+                  Delete Order
+                </DeleteForeverIcon>
               </CardContent>
             </Card>
           </Grid>

@@ -4,7 +4,7 @@ import { Box, TextField, Button, Typography, Divider } from "@mui/material";
 import axios from "axios"; 
 
 const formatCurrency = (amount) => {
-  return `Rs ${amount.toLocaleString()}`;
+  return `$ ${amount.toLocaleString()}`;
 };
 
 function Checkout() {
@@ -161,7 +161,7 @@ function Checkout() {
         >
           Buy Now
         </Button>
-      </Box>
+      </Box> 
     </Box>
   );
 }
