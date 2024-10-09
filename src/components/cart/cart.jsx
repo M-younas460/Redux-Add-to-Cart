@@ -15,13 +15,13 @@ const Cart = () => {
   const dispatch = useDispatch();
 
   const formatCurrency = (amount) => {
-    return `Rs ${amount.toLocaleString()}`;
+    return `$ ${amount.toLocaleString()}`;
   };
 
   const grandTotal = cartItems.reduce((total, item) => {
     const itemPrice =
       typeof item.price === "string"
-        ? parseInt(item.price.replace(/Rs\s?|,/g, ""))
+        ? parseInt(item.price.replace(/$\s?|,/g, ""))
         : item.price;
     return total + itemPrice * item.quantity;
   }, 0);
@@ -45,7 +45,7 @@ const Cart = () => {
       {cartItems.map((item) => {
         const itemPrice =
           typeof item.price === "string"
-            ? parseInt(item.price.replace(/Rs\s?|,/g, ""))
+            ? parseInt(item.price.replace(/$\s?|,/g, ""))
             : item.price;
         const totalPrice = itemPrice * item.quantity;
 

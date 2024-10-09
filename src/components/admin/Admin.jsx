@@ -1,8 +1,9 @@
+
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Card, CardContent, Grid } from "@mui/material";
 import axios from "axios";
 
-const formatCurrency = (amount) => `Rs ${amount.toLocaleString()}`;
+const formatCurrency = (amount) =>`Rs ${amount.toLocaleString()}`;
 
 function AdminDashboard() {
   const [orders, setOrders] = useState([]);
@@ -53,7 +54,6 @@ function AdminDashboard() {
                         mb: 2,
                       }}
                     >
-                     
                       <Typography>
                         {product.productName} (x{product.quantity})
                       </Typography>
